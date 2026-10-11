@@ -1,0 +1,25 @@
+{
+  "name": "moodcode",
+  "version": "0.1.0",
+  "description": "Claude Code, now with feelings: an evolving mood shown as a one-line ASCII face on short, simple, human replies.",
+  "author": { "name": "Nikola HORVAT" },
+  "homepage": "https://github.com/we-are-digital-architects/moodcode",
+  "repository": "https://github.com/we-are-digital-architects/moodcode",
+  "license": "MIT",
+  "keywords": ["mood", "emoticon", "kaomoji", "sentiment", "personality", "tone", "terminal"],
+  "userConfig": {
+    "judge": {
+      "type": "boolean",
+      "title": "Background mood judge",
+      "description": "After each reply a small model reviews the exchange and adjusts the mood. Off: fast rules only.",
+      "default": true
+    },
+    "judgeModel": {
+      "type": "string",
+      "title": "Judge model",
+      "description": "Model the background judge uses.",
+      "default": "haiku",
+      "options": ["haiku", "sonnet"]
+    }
+  }
+}
