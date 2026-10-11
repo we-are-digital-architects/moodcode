@@ -1,0 +1,143 @@
+import { expect, mock, test } from 'claude-code/testing'
+import { finished, installBottoms, judgeAnswer, moodCommand, userPrompt } from './helpers.ts'
+
+const ASK = 'how do I read a file in python'
+const THANKED = judgeAnswer('{"dPleasure":0.5,"dEnergy":0,"isRepeat":false,"reason":"user thanked for fix"}')
+
+test('the judge runs after the turn, without the turn waiting, and lands on the next message', async ($, on) => {
+  mock.store(on)
+  const clock = mock.clock(on, { now: 1000 })
+  const rec = installBottoms(on, THANKED)
+  await $.prompt.submit(userPrompt(ASK))
+  await $.turn.start({ text: ASK, turnId: 't1' })
+  await $.turn.complete(finished('(^.^)  Use open().', 't1'))
+  expect(rec.judgeCalls).toHaveLength(0)
+  await clock.advance(5)
+  expect(rec.judgeCalls).toHaveLength(1)
+  expect(rec.judgeCalls[0]?.model).toBe('haiku')
+  expect(rec.judgeCalls[0]?.maxTokens).toBe(150)
+  expect(rec.judgeCalls[0]?.timeoutMs).toBe(30000)
+  expect(rec.judgeCalls[0]?.prompt).toContain(ASK)
+  expect(rec.judgeCalls[0]?.prompt).toContain('(^.^)  Use open().')
+  await $.prompt.submit(userPrompt('ok and writing json'))
+  expect(rec.contexts[1]).toEqual([expect.stringContaining('mood: (^o^) happy')])
+})
+
+test('the judge uses the configured model', { options: { judge: true, judgeModel: 'sonnet' } }, async ($, on) => {
+  mock.store(on)
+  const clock = mock.clock(on)
+  const rec = installBottoms(on)
+  await $.prompt.submit(userPrompt(ASK))
+  await $.turn.start({ text: ASK, turnId: 't1' })
+  await $.turn.complete(finished('(^.^)  Use open().', 't1'))
+  await clock.advance(5)
+  expect(rec.judgeCalls[0]?.model).toBe('sonnet')
+})
+
+test('no judge call when the judge setting is off', { options: { judge: false } }, async ($, on) => {
+  mock.store(on)
+  const clock = mock.clock(on)
+  const rec = installBottoms(on)
+  await $.prompt.submit(userPrompt(ASK))
+  await $.turn.start({ text: ASK, turnId: 't1' })
+  await $.turn.complete(finished('(^.^)  Use open().', 't1'))
+  await clock.advance(5)
+  expect(rec.judgeCalls).toHaveLength(0)
+})
+
+test('a neighbour emoticon in the answer is recorded as a shift', async ($, on) => {
+  mock.store(on)
+  const clock = mock.clock(on)
+  installBottoms(on)
+  await $.prompt.submit(userPrompt('so it is the cache key?'))
+  await $.turn.start({ text: 'so it is the cache key?', turnId: 't1' })
+  await $.turn.complete(finished('(^o^)  Yes, that is it.', 't1'))
+  await clock.advance(5)
+  const out = await $.command.run(moodCommand(''))
+  expect(out.text).toContain('(^o^) happy (pleasure 0.34, energy 0.00)')
+  expect(out.text).toContain('Last change: shift')
+})
+
+test('subagent and interrupted turns change nothing and are not judged', async ($, on) => {
+  mock.store(on)
+  const clock = mock.clock(on)
+  const rec = installBottoms(on)
+  await $.prompt.submit(userPrompt(ASK))
+  await $.turn.complete(finished('d(^O^)b  Done!', 'sub1', { agentId: 'a1' }))
+  await $.turn.start({ text: ASK, turnId: 't1' })
+  await $.turn.complete(finished('d(^O^)b  Partial', 't1', { reason: 'aborted', isAborted: true }))
+  await clock.advance(5)
+  expect(rec.judgeCalls).toHaveLength(0)
+  const out = await $.command.run(moodCommand(''))
+  expect(out.text).not.toContain('shift')
+  expect(out.text).toContain('(^.^) neutral')
+})
+
+test('a failed judge call is logged on its turn', async ($, on) => {
+  mock.store(on)
+  const clock = mock.clock(on)
+  const usage = { input_tokens: 0, output_tokens: 0, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 }
+  installBottoms(on, { isAnswered: false, reason: 'api-error', status: 500, error: 'server_error', usage })
+  await $.prompt.submit(userPrompt(ASK))
+  await $.turn.start({ text: ASK, turnId: 't1' })
+  await $.turn.complete(finished('(^.^)  Use open().', 't1'))
+  await clock.advance(5)
+  expect((await $.command.run(moodCommand(''))).text).toContain('judge-failed:api-error')
+})
+
+test('an unparsable judge reply is logged on its turn', async ($, on) => {
+  mock.store(on)
+  const clock = mock.clock(on)
+  installBottoms(on, judgeAnswer('I feel fine.'))
+  await $.prompt.submit(userPrompt(ASK))
+  await $.turn.start({ text: ASK, turnId: 't1' })
+  await $.turn.complete(finished('(^.^)  Use open().', 't1'))
+  await clock.advance(5)
+  expect((await $.command.run(moodCommand(''))).text).toContain('judge-failed:unparsable')
+})
+
+test('two verdicts that land before the next message are both applied once', async ($, on) => {
+  mock.store(on)
+  const clock = mock.clock(on)
+  const rec = installBottoms(on, judgeAnswer('{"dPleasure":0.1,"dEnergy":0,"isRepeat":false,"reason":"fine"}'))
+  await $.prompt.submit(userPrompt('first question about lists'))
+  await $.turn.start({ text: 'first question about lists', turnId: 't1' })
+  await $.turn.complete(finished('(^.^)  Lists are ordered.', 't1'))
+  await $.prompt.submit(userPrompt('second question about maps'))
+  await $.turn.start({ text: 'second question about maps', turnId: 't2' })
+  await $.turn.complete(finished('(^.^)  Maps hold pairs.', 't2'))
+  await clock.advance(5)
+  expect(rec.judgeCalls).toHaveLength(2)
+  await $.prompt.submit(userPrompt('third question about sets'))
+  const out = await $.command.run(moodCommand(''))
+  expect(out.text).toContain('Last change: judge:fine, judge:fine')
+  await $.prompt.submit(userPrompt('fourth question about trees'))
+  expect((await $.command.run(moodCommand(''))).text).toContain('Last change: drift only')
+})
+
+test('a message typed while Claude answers keeps its own turn', async ($, on) => {
+  mock.store(on)
+  const clock = mock.clock(on)
+  const usage = { input_tokens: 0, output_tokens: 0, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 }
+  installBottoms(on, { isAnswered: false, reason: 'api-error', status: 500, error: 'server_error', usage })
+  await $.prompt.submit(userPrompt(ASK))
+  await $.turn.start({ text: ASK, turnId: 't1' })
+  await $.prompt.submit({ ...userPrompt('thanks a lot'), turnId: 't1' })
+  await $.turn.complete(finished('(^.^)  Use open().', 't1'))
+  await clock.advance(5)
+  const out = (await $.command.run(moodCommand(''))).text
+  expect(out).toContain('(^o^) happy (pleasure 0.35, energy 0.00)')
+  expect(out).toContain('  1. (^.^)  judge-failed:api-error')
+  expect(out).toContain('  2. (^o^)  rule:thanks')
+})
+
+test('a judge call the engine refuses is logged on its turn', async ($, on) => {
+  mock.store(on)
+  const clock = mock.clock(on)
+  installBottoms(on, { deny: 'model blocked' })
+  await $.prompt.submit(userPrompt(ASK))
+  await $.turn.start({ text: ASK, turnId: 't1' })
+  await $.turn.complete(finished('(^.^)  Use open().', 't1'))
+  await clock.advance(5)
+  expect((await $.command.run(moodCommand(''))).text).toContain('judge-failed:rejected')
+})
