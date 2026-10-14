@@ -1,6 +1,6 @@
 {
   "name": "moodcode",
-  "description": "moodcode for Claude Code: an evolving mood shown as a one-line ASCII face on short, simple replies.",
+  "description": "moodcode for Claude Code: an evolving mood, shown as a face beside short, simple replies whenever it changes.",
   "owner": { "name": "Nikola HORVAT" },
   "plugins": [{ "name": "moodcode", "source": "./" }]
 }

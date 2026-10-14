@@ -1,5 +1,5 @@
 import type {
-  ModelCompleteInput, ModelCompleteResult, On, PromptOrigin, PromptSubmitInput, TurnCompleteInput,
+  ModelCompleteInput, ModelCompleteResult, On, PromptOrigin, PromptSubmitInput, SessionMessage, TurnCompleteInput,
 } from 'claude-code'
 import type { KV } from '../src/state.ts'
 
@@ -36,8 +36,13 @@ export function judgeAnswer(text: string): ModelCompleteResult {
 
 export const ROUTINE = judgeAnswer('{"dPleasure":0,"dEnergy":0,"isRepeat":false,"reason":"routine"}')
 
-export function installBottoms(on: On, judge: ModelCompleteResult | { readonly deny: string } = ROUTINE): Recorder {
+export function installBottoms(
+  on: On,
+  judge: ModelCompleteResult | { readonly deny: string } = ROUTINE,
+  transcript: readonly SessionMessage[] = [],
+): Recorder {
   const recorder: Recorder = { contexts: [], judgeCalls: [], commands: [] }
+  on('session.messages', () => ({ value: [...transcript] }))
   on('session.id', () => ({ value: SESSION }))
   on('session.start', ($, e) => ({ cwd: e.cwd }))
   on('prompt.submit', ($, e) => {

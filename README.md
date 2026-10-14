@@ -2,7 +2,26 @@
 
 Claude Code, now with feelings. `(^o^)`
 
-Gives Claude Code a mood that changes as you talk. Every reply starts with an emoticon showing how Claude feels about the conversation, and replies stay short, simple and human.
+Gives Claude Code a mood that changes as you talk. Whenever the mood changes, Claude's face is drawn beside the reply, and replies stay short, simple and human.
+
+```
+❯ hi, what does git stash do?
+ ▄█████▄
+▟█ ███ █▙  ⏺ git stash shelves your uncommitted changes and gives you a clean working
+█████████    directory. Bring them back later with git stash pop.
+▜██▞▀▚██▛
+ ▀█████▀
+❯ and what does git stash list show?
+⏺ git stash list shows every stash you saved, newest first.
+❯ thanks, that really helps!
+ ▄█████▄
+▟█ ███ █▙  ⏺ Glad it helped! Let me know if you have any other git questions.
+█████████
+▜█▞▜█▛▚█▛
+ ▀█▙▄▟█▀
+```
+
+Nine faces cover the mood, from worked up to calm and from unhappy to happy. Each also has a one-line form:
 
 ```
               unhappy            neutral           happy
@@ -11,13 +30,13 @@ normal        (._.)  unhappy     (^.^)  neutral    (^o^)    happy
 calm          (-_-)  weary       (o_O)  unsure     (^-^)    content
 ```
 
-Claude starts at `(^.^)`. Thanks and praise lift the mood. Asking the same question again, even in other words, wears it down. When you work something out correctly, Claude may brighten in the same reply. Mood drifts back toward neutral over a few calm turns, and a new session or `/clear` starts fresh.
+Claude starts at `(^.^)`, and the face shows on the first reply and then only when it changes. Thanks and praise lift the mood. Asking the same question again, even in other words, wears it down. When you work something out correctly, Claude may brighten in the same reply. Mood drifts back toward neutral over a few calm turns, and a new session or `/clear` starts fresh.
 
 Only the chat text changes. Code, commands, file edits, commit messages and PR text are written normally.
 
 ## Install
 
-Requires Claude Code **2.1.296 or newer**. The plugin uses the mods API, which is in early access and may change between releases.
+Requires Claude Code **2.1.299 or newer**. The plugin uses the mods API, which is in early access and may change between releases.
 
 At the prompt of a terminal session:
 
@@ -38,6 +57,7 @@ Answer `y` to add the marketplace, then choose a scope.
 Settings in `/config`:
 - **Background mood judge** (on by default): after each reply, a small model reviews the exchange and adjusts the mood. Off means instant rules only.
 - **Judge model**: `haiku` (default) or `sonnet`.
+- **Face style**: `drawn` (default), the 9x5 face beside the reply, or `line`, the one-line face at its start. Other surfaces (desktop, VS Code) and terminals narrower than 60 columns use the one-line face.
 
 ## How it works
 

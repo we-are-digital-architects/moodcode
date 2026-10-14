@@ -1,11 +1,12 @@
 {
   "name": "moodcode",
   "version": "0.1.0",
-  "description": "Claude Code, now with feelings: an evolving mood shown as a one-line ASCII face on short, simple, human replies.",
+  "description": "Claude Code, now with feelings: an evolving mood, shown as a face beside short, simple, human replies whenever it changes.",
   "author": { "name": "Nikola HORVAT" },
   "homepage": "https://github.com/we-are-digital-architects/moodcode",
   "repository": "https://github.com/we-are-digital-architects/moodcode",
   "license": "MIT",
+  "types": "./types/index.d.ts",
   "keywords": ["mood", "emoticon", "kaomoji", "sentiment", "personality", "tone", "terminal"],
   "userConfig": {
     "judge": {
@@ -20,6 +21,13 @@
       "description": "Model the background judge uses.",
       "default": "haiku",
       "options": ["haiku", "sonnet"]
+    },
+    "faceStyle": {
+      "type": "string",
+      "title": "Face style",
+      "description": "drawn: a 9x5 face beside the reply in the terminal. line: the one-line face, like (^o^). Either way the face shows only when it changes.",
+      "default": "drawn",
+      "options": ["drawn", "line"]
     }
   }
 }

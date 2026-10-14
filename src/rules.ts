@@ -28,7 +28,7 @@ export function tokenize(text: string): string[] {
 }
 
 // FNV-1a: the store keeps a fingerprint of each word, never the word itself.
-function fingerprint(token: string): string {
+export function fingerprint(token: string): string {
   let h = 0x811c9dc5
   for (let i = 0; i < token.length; i++) {
     h ^= token.charCodeAt(i)
