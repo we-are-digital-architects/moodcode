@@ -25,7 +25,7 @@
     "faceStyle": {
       "type": "string",
       "title": "Face style",
-      "description": "drawn: a 9x5 face beside the reply in the terminal. line: the one-line face, like (^o^). Either way the face shows only when it changes.",
+      "description": "drawn: a 9x4 face beside the reply in the terminal. line: the one-line face, like (^o^). Either way the face shows only when it changes.",
       "default": "drawn",
       "options": ["drawn", "line"]
     }

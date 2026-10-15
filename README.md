@@ -57,7 +57,7 @@ Answer `y` to add the marketplace, then choose a scope.
 Settings in `/config`:
 - **Background mood judge** (on by default): after each reply, a small model reviews the exchange and adjusts the mood. Off means instant rules only.
 - **Judge model**: `haiku` (default) or `sonnet`.
-- **Face style**: `drawn` (default), the 9x5 face beside the reply, or `line`, the one-line face at its start. Other surfaces (desktop, VS Code) and terminals narrower than 60 columns use the one-line face.
+- **Face style**: `drawn` (default), the 9x4 face beside the reply, or `line`, the one-line face at its start. Other surfaces (desktop, VS Code) and terminals narrower than 60 columns use the one-line face.
 
 ## How it works
 

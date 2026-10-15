@@ -117,7 +117,7 @@ Every face is printable ASCII with no `\`, `*` or backtick, and none starts with
 ### 5.1.1 Drawn faces (0.2.0)
 
 - Claude still writes the one-line face at the start of every reply: it is what the shift and the history read.
-- In the terminal a `ui.render` hook on `AssistantMessage` strips it and draws the cell's 9x5 picture (`data/faces.ts`) beside the engine's own row: a solid round head of quadrant blocks with the eyes and mouth cut out, no shading.
+- In the terminal a `ui.render` hook on `AssistantMessage` strips it and draws the cell's 9x4 picture (`data/faces.ts`) beside the engine's own row: a solid round head of quadrant blocks with the eyes and mouth cut out, no shading.
 - A face shows on the first reply and then only on a reply row whose face differs from the row before. `session.append` (door `response`, main conversation) records each row's decision in `$.state`; a row not recorded yet (still streaming) compares with the last face. `/mood on` and `/mood off` start over, and `session.start` rebuilds the record from `$.session.messages()` on resume.
 - Setting `faceStyle`: `drawn` (default) or `line`. Other surfaces and terminals under 60 columns use the one-line face; the one-line face too shows only when it changes.
 

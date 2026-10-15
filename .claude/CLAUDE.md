@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-`moodcode` (working name: sentiment) is a Claude Code **mod** (function hooks module, early-access API, Claude Code ≥ 2.1.299). It gives Claude a two-axis mood shown as a face: Claude writes a one-line face at the start of each reply, and the terminal draws it as a 9x5 picture beside the reply whenever it changes. Design: `docs/superpowers/specs/2026-10-11-sentiment-plugin-design.md`. Plan: `docs/superpowers/plans/2026-10-11-sentiment-plugin.md`.
+`moodcode` (working name: sentiment) is a Claude Code **mod** (function hooks module, early-access API, Claude Code ≥ 2.1.299). It gives Claude a two-axis mood shown as a face: Claude writes a one-line face at the start of each reply, and the terminal draws it as a 9x4 picture beside the reply whenever it changes. Design: `docs/superpowers/specs/2026-10-11-sentiment-plugin-design.md`. Plan: `docs/superpowers/plans/2026-10-11-sentiment-plugin.md`.
 
 ## Commands
 

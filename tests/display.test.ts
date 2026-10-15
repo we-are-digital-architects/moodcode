@@ -3,7 +3,7 @@ import { DRAWN, DRAWN_ROWS, DRAWN_WIDTH } from '../data/faces.ts'
 import { GRID } from '../data/grid.ts'
 import { EMPTY_LOG, faceFor, firstText, recordRow, replay, splitFace } from '../src/display.ts'
 
-test('every grid face has a 9x5 drawing of quadrant blocks', () => {
+test('every grid face has a 9x4 drawing of quadrant blocks', () => {
   for (const { emoticon } of GRID) {
     const rows = DRAWN[emoticon]
     expect(rows?.length).toBe(DRAWN_ROWS)
