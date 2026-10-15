@@ -1,6 +1,6 @@
 {
   "name": "moodcode",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Claude Code, now with feelings: an evolving mood, shown as a face beside short, simple, human replies whenever it changes.",
   "author": { "name": "Nikola HORVAT" },
   "homepage": "https://github.com/we-are-digital-architects/moodcode",
